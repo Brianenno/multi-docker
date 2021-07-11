@@ -1,0 +1,52 @@
+version: '3'
+services:
+    postgres:
+        image: 'postgres:latest'
+        environment: 
+            - POSTGRES_PASSWORD=postgres_password # <= this is due to a recent image change on dockercompose hub
+    redis:
+        image: 'redis:latest'
+    nginx:
+        restart: always
+        build:
+            dockerfile: Dockerfile.dev
+            context: ./nginx
+        ports: 
+            - '3050:80'
+        depends_on: # This is helpfull to avoid errors (??)
+            - api
+            - client
+    api:
+        build: 
+            dockerfile: Dockerfile.dev
+            context: ./server # This is the "folder" name which contains the code
+        volumes:
+            - /app/node_modules # don't try to overwrite this dir
+            - ./server:/app
+        environment: 
+            - REDIS_HOST=redis # we define a variable inside the container which will be applied in run-time
+            - REDIS_PORT=6379
+            - PGUSER=postgres
+            - PGHOST=postgres
+            - PGDATABASE=postgres
+            - PGPASSWORD=postgres_password
+            - PGPORT=5432
+    client:
+        stdin_open: true # <=== THIS IS VERY IMPORTANT OTHERWISE THE CLIENT WILL NOT WORK (TF?!?)
+        build: 
+            dockerfile: Dockerfile.dev
+            context: ./client
+        volumes:
+            - /app/node_modules
+            - ./client:/app
+    worker:
+        build: 
+            dockerfile: Dockerfile.dev
+            context: ./worker
+        volumes:
+            - /app/node_modules
+            - ./worker:/app
+        environment:
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+    
