@@ -21,14 +21,14 @@ services:
             dockerfile: Dockerfile.dev
             context: ./server # This is the "folder" name which contains the code
         volumes:
-            - /app/node_modules # don't try to overwrite this dir
-            - ./server:/app
+            - /app/node_modules # don't try to overwrite this dir, don't try to redirect access to that. Just leave the folder as is
+            - ./server:/app #so, any time our application tries to access anything inside the "app" directory (inside the "container"), except from the "node modules" folder, it is going to essencially get redirected back to the "server" directory inside our current project folder. So anytime we are gonna make any change, anything inside that server will be automatically reflected inside the "app" folder of our container, and that's gonna make sure that we don't have to rebuild our 'image' anytime that me make a little change to our source code. 
         environment: 
             - REDIS_HOST=redis # we define a variable inside the container which will be applied in run-time
             - REDIS_PORT=6379
             - PGUSER=postgres
             - PGHOST=postgres
-            - PGDATABASE=postgres
+            - PGDATABASE=fibvalues
             - PGPASSWORD=postgres_password
             - PGPORT=5432
     client:
