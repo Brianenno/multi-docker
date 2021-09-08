@@ -1,4 +1,6 @@
 sudo: required
+language: generic
+
 services:
   - docker
 
@@ -23,11 +25,11 @@ after_success:
 
 deploy:
   provider: elasticbeanstalk
-  region: eu-west-1
-  app: multi-docker
-  env: Multidocker-env
-  bucket_name: elasticbeanstalk-eu-west-1-154450049532
-  bucket_path: multi-docker
+  region: 'eu-west-1'
+  app: 'new-multi-emotion'
+  env: 'Newmultiemotion-env'
+  bucket_name: 'elasticbeanstalk-eu-west-1-154450049532'
+  bucket_path: 'new-multi-emotion'
   on:
     branch: main
   access_key_id: $AWS_ACCESS_KEY
